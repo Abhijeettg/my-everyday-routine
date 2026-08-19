@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="./favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="theme-color" content="#05060D" media="(prefers-color-scheme: dark)" />
+    <meta name="theme-color" content="#F7F3EA" media="(prefers-color-scheme: light)" />
+    <title>My Growth Tracker</title>
+
+    <!-- Installable on a phone home screen. iOS ignores the manifest's display
+         mode, so the apple-* tags are what actually make it open fullscreen. -->
+    <link rel="manifest" href="./manifest.webmanifest" />
+    <link rel="apple-touch-icon" href="./icon-180.png" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-title" content="Routine" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  <script>
+      // set the theme before first paint so there is no flash
+      (function () {
+        try {
+          var t = localStorage.getItem('my-everyday-routine:theme');
+          if (t !== 'light' && t !== 'dark') {
+            t = window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
+          }
+          document.documentElement.dataset.theme = t;
+          document.documentElement.style.colorScheme = t;
+        } catch (e) {}
+      })();
+    </script>
+    <script type="module" crossorigin src="./assets/index-BNURfOXu.js"></script>
+    <link rel="stylesheet" crossorigin href="./assets/index-Tng7-0AG.css">
+  </head>
+  <body>
+    <div id="root"></div>
+  </body>
+</html>
