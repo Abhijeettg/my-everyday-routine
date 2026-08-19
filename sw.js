@@ -19,9 +19,9 @@ const ASSETS = `routine-assets-${VERSION}`;
 const PRECACHE = [
   './',
   './index.html',
-  './assets/Dashboard-ZKfG5HsW.js',
-  './assets/index-BNURfOXu.js',
-  './assets/index-Tng7-0AG.css',
+  './assets/Dashboard-Bf2rN_Us.js',
+  './assets/index-CEtmMFQh.js',
+  './assets/index-D5f2-D7J.css',
   './favicon.svg',
   './icon-180.png',
   './icon-192.png',
