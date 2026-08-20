@@ -10,7 +10,7 @@
  * every change) and, when a server is reachable, in tracker.json. Caching API
  * responses would mean serving yesterday's numbers as though they were current.
  */
-const VERSION = 'v20';
+const VERSION = 'v21';
 const SHELL = `routine-shell-${VERSION}`;
 const ASSETS = `routine-assets-${VERSION}`;
 
@@ -83,16 +83,25 @@ self.addEventListener('fetch', event => {
   // Navigation: serve the app shell so a deep link works with no network.
   if (request.mode === 'navigate') {
     event.respondWith((async () => {
-      try {
-        const fresh = await fetch(request);
-        const cache = await caches.open(SHELL);
-        cache.put(SHELL_URLS[1], fresh.clone());
-        return fresh;
-      } catch {
-        return (await caches.match(SHELL_URLS[1]))
-            ?? (await caches.match(SHELL_URLS[0]))
-            ?? Response.error();
-      }
+      const cache = await caches.open(SHELL);
+      const cached = await cache.match(SHELL_URLS[1]) ?? await cache.match(SHELL_URLS[0]);
+
+      const network = fetch(request).then(res => {
+        if (res && res.ok) cache.put(SHELL_URLS[1], res.clone());
+        return res;
+      }).catch(() => null);
+
+      // Nothing to fall back on, so there is no choice but to wait.
+      if (!cached) return (await network) ?? Response.error();
+
+      // Otherwise give the network a short moment to win — a fresh build should
+      // still arrive first on a decent connection — and hand over the cached
+      // shell the instant it does not. Refreshing used to wait on the network
+      // every single time, which on a phone is what made it feel broken.
+      const patience = new Promise(resolve => setTimeout(() => resolve(null), 600));
+      const quick = await Promise.race([network, patience]);
+      event.waitUntil(network);     // keep updating even when the cache was served
+      return quick ?? cached;
     })());
     return;
   }
