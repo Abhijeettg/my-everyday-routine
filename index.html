@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="./favicon.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
 
     <script>
       // set the theme before first paint so there is no flash
@@ -32,6 +32,26 @@
           }
         } catch (e) {}
       })();
+
+      // Safari has ignored user-scalable=no since iOS 10, so the meta tag above
+      // is only half of it. A pinch is a gesture event on iOS and a two-finger
+      // touchmove everywhere else; ctrl with the wheel is how a trackpad pinch
+      // arrives on a desktop. Refusing those three is what actually holds the
+      // app at one size — double tap is left to touch-action in the stylesheet,
+      // which is the only thing browsers still honour for it. One-finger
+      // scrolling is untouched.
+      (function () {
+        var stop = function (e) { e.preventDefault(); };
+        ['gesturestart', 'gesturechange', 'gestureend'].forEach(function (name) {
+          document.addEventListener(name, stop, { passive: false });
+        });
+        document.addEventListener('touchmove', function (e) {
+          if (e.touches.length > 1) e.preventDefault();
+        }, { passive: false });
+        window.addEventListener('wheel', function (e) {
+          if (e.ctrlKey) e.preventDefault();
+        }, { passive: false });
+      })();
     </script>
     <meta name="theme-color" content="#05060D" media="(prefers-color-scheme: dark)" />
     <meta name="theme-color" content="#F7F3EA" media="(prefers-color-scheme: light)" />
@@ -56,8 +76,8 @@
     <noscript>
       <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
     </noscript>
-    <script type="module" crossorigin src="./assets/index-CBq9_j8c.js"></script>
-    <link rel="stylesheet" crossorigin href="./assets/index-CvCihyhi.css">
+    <script type="module" crossorigin src="./assets/index-beSOZm6s.js"></script>
+    <link rel="stylesheet" crossorigin href="./assets/index-CdzZwAha.css">
   </head>
   <body>
     <div id="root"></div>
