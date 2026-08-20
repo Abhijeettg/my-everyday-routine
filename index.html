@@ -10,11 +10,12 @@
       (function () {
         try {
           var t = localStorage.getItem('my-everyday-routine:theme');
-          if (t !== 'light' && t !== 'dark') {
+          if (t !== 'light' && t !== 'dark' && t !== 'paper') {
             t = window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
           }
           document.documentElement.dataset.theme = t;
-          document.documentElement.style.colorScheme = t;
+          // e-ink is a light scheme as far as the browser's own furniture goes
+          document.documentElement.style.colorScheme = t === 'dark' ? 'dark' : 'light';
 
           // A full-screen panel that was open before the refresh takes a moment to
           // come back: the app has to boot, fetch the page it lives on and read
@@ -25,7 +26,7 @@
             var cover = document.createElement('div');
             cover.id = 'fs-boot';
             cover.style.cssText = 'position:fixed;inset:0;z-index:250;background:'
-              + (t === 'light' ? '#F7F3EA' : '#05060D');
+              + (t === 'dark' ? '#05060D' : t === 'paper' ? '#F6F4EF' : '#F7F3EA');
             document.documentElement.appendChild(cover);
             // never leave someone staring at a blank screen if it does not arrive
             setTimeout(function () { cover.remove(); }, 4000);
@@ -76,8 +77,8 @@
     <noscript>
       <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
     </noscript>
-    <script type="module" crossorigin src="./assets/index-beSOZm6s.js"></script>
-    <link rel="stylesheet" crossorigin href="./assets/index-CdzZwAha.css">
+    <script type="module" crossorigin src="./assets/index-DaN0KGOA.js"></script>
+    <link rel="stylesheet" crossorigin href="./assets/index-4h5rhonD.css">
   </head>
   <body>
     <div id="root"></div>
