@@ -10,7 +10,7 @@
  * every change) and, when a server is reachable, in tracker.json. Caching API
  * responses would mean serving yesterday's numbers as though they were current.
  */
-const VERSION = 'v21';
+const VERSION = 'v22';
 const SHELL = `routine-shell-${VERSION}`;
 const ASSETS = `routine-assets-${VERSION}`;
 
@@ -19,19 +19,19 @@ const ASSETS = `routine-assets-${VERSION}`;
 const PRECACHE = [
   './',
   './index.html',
-  './assets/Checkout-x4YzlHt8.js',
-  './assets/Countdown-CX6L4OnC.js',
-  './assets/Dashboard-Dw-Oru70.js',
-  './assets/DeadlinesPage-DYR-bmT3.js',
-  './assets/GlowCard-DoWUcgo-.js',
-  './assets/Journal-BwHsaRVa.js',
-  './assets/Money-DevNq6Wh.js',
-  './assets/Review-fmKOfOcj.js',
+  './assets/Checkout-CV_9L0DJ.js',
+  './assets/Countdown-cMIs11Tc.js',
+  './assets/Dashboard-DijOvXsY.js',
+  './assets/DeadlinesPage-vOUPSAPD.js',
+  './assets/GlowCard-3HE2Z9Cu.js',
+  './assets/Journal-OfKp3jVP.js',
+  './assets/Money-BspSkcdm.js',
+  './assets/Review-ZKBZS2Hv.js',
   './assets/arrow-right-yhEcDHFg.js',
   './assets/chevron-right-Bj4CGNDY.js',
   './assets/coins-DpQagawl.js',
   './assets/flag-Cn4lwu7q.js',
-  './assets/index-BxMF5apK.js',
+  './assets/index-BE4aAo7v.js',
   './assets/index-CS5VYxeT.css',
   './assets/maximize-2-BKx6qGVx.js',
   './assets/sparkles-BKty7TuE.js',
@@ -88,8 +88,26 @@ self.addEventListener('fetch', event => {
       const cache = await caches.open(SHELL);
       const cached = await cache.match(SHELL_URLS[1]) ?? await cache.match(SHELL_URLS[0]);
 
-      const network = fetch(request).then(res => {
-        if (res && res.ok) cache.put(SHELL_URLS[1], res.clone());
+      const previous = cached ? await cached.clone().text() : null;
+
+      const network = fetch(request).then(async res => {
+        if (res && res.ok) {
+          const fresh = await res.clone().text();
+          await cache.put(SHELL_URLS[1], new Response(fresh, {
+            status: res.status,
+            headers: res.headers,
+          }));
+          /*
+           * If the copy just served is not the copy that now exists, say so. On
+           * a phone the network rarely wins the race below, so without this you
+           * keep being handed yesterday's build and no amount of refreshing
+           * changes it — every refresh loses the race the same way.
+           */
+          if (previous !== null && fresh !== previous) {
+            const clients = await self.clients.matchAll({ type: 'window' });
+            for (const c of clients) c.postMessage('shell-updated');
+          }
+        }
         return res;
       }).catch(() => null);
 
